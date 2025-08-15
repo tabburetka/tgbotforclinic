@@ -129,6 +129,7 @@ async def send_question(user_id: int, message: types.Message, question_num: int 
 @dp.callback_query(lambda c: c.data == "test_button")
 async def start_test(callback: types.CallbackQuery):
     """Начало теста (без изменений)"""
+    await callback.message.delete()
     user_id = callback.from_user.id
     user_sessions[user_id] = {'answers': [], 'last_activity': datetime.now()}
     await send_question(user_id, callback.message)
@@ -152,10 +153,12 @@ async def process_answer(callback: types.CallbackQuery):
 @dp.callback_query(lambda c: c.data == "main_menu")
 async def back_to_main_menu(callback: types.CallbackQuery):
     """Возврат в главное меню (без изменений)"""
+    
     user_id = callback.from_user.id
     if user_id in user_sessions:
         del user_sessions[user_id]  # Очищаем сессию при возврате в меню
     await send_welcome(callback.message)
+    await callback.message.delete()
 
 @dp.callback_query(lambda c: c.data == "scenario_selection")
 async def select(callback: types.CallbackQuery):
